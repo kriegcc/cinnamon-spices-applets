@@ -17,7 +17,11 @@ However, there are some deviations (like error handling) in this applet from the
 
 ## Available Translations and Their Authors
 
+- Catalan (ca): Odyssey
 - German (de): kriegcc (copied from mate-panel and adjusted)
+- Spanish (es): haggen88
+
+[Generated Translation Status Table](https://github.com/linuxmint/cinnamon-spices-applets/blob/translation-status-tables/.translation-tables/tables/fish%40kriegcc.md)
 
 ## Translating
 
