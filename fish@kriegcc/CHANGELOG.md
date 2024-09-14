@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Fixed
+
 - Fixed a crash when popup menu is replaced (e.g. transition from error to normal message) while it is still open.
 
 ## [0.1.1] - 2024-09-11
