@@ -64,7 +64,7 @@ export class FishApplet extends Applet {
   private signalManager!: imports.misc.signalManager.SignalManager
 
   // popup menu
-  // initialized in helper function initPopupMenu()
+  // initialized in helper function initApplet()
   private menuManager!: imports.ui.popupMenu.PopupMenuManager
   // either shows fortune message or error (or a special popup on fools day)
   private messagePopup!: BasePopupMenu
@@ -129,6 +129,7 @@ export class FishApplet extends Applet {
     this.signalManager.connect(themeManager, "theme-set", this.changeTheme.bind(this), this)
 
     this.initAnimation()
+    this.menuManager = new PopupMenuManager(this)
     this.updateMessagePopup()
     this.updateName() // MessagePopup needs to be initialized before!
 
@@ -215,18 +216,13 @@ export class FishApplet extends Applet {
       }
     }
 
-    // reset menu manager and create new the new popup menu with the defined props from above
-    if (this.menuManager) {
-      // The active popup menu needs to be closed or removed before destroying the menu manager
-      // Otherwise, it crashes Cinnamon when the menu is opened while the manager gets destroyed.
-      // I would have expected that this is handled in destroy() method below, but it isn't.
-      if (this.messagePopup) {
-        this.menuManager.removeMenu(this.messagePopup)
-      }
-      this.menuManager.destroy()
+    // remove old popup menu
+    if (this.messagePopup) {
+      this.menuManager.removeMenu(this.messagePopup)
+      this.messagePopup.destroy()
     }
-    this.menuManager = new PopupMenuManager(this)
-    // returns a popup menu instance with respective popup menu type (fishMessage, error, fools day)
+
+    // create and add the new one
     this.messagePopup = PopupMenuFactory.createPopupMenu(popupMenuProps)
     this.menuManager.addMenu(this.messagePopup)
 
