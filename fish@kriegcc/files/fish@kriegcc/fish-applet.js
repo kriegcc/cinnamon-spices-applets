@@ -1178,6 +1178,7 @@ class FishApplet extends Applet {
         this.signalManager = new SignalManager();
         this.signalManager.connect(themeManager, "theme-set", this.changeTheme.bind(this), this);
         this.initAnimation();
+        this.menuManager = new PopupMenuManager(this);
         this.updateMessagePopup();
         this.updateName();
         this.updateCommand();
@@ -1249,13 +1250,10 @@ class FishApplet extends Applet {
                 styleClassName,
             };
         }
-        if (this.menuManager) {
-            if (this.messagePopup) {
-                this.menuManager.removeMenu(this.messagePopup);
-            }
-            this.menuManager.destroy();
+        if (this.messagePopup) {
+            this.menuManager.removeMenu(this.messagePopup);
+            this.messagePopup.destroy();
         }
-        this.menuManager = new PopupMenuManager(this);
         this.messagePopup = PopupMenuFactory.createPopupMenu(popupMenuProps);
         this.menuManager.addMenu(this.messagePopup);
         if (popupMenuType === "FishMessage") {
