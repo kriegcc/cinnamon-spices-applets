@@ -69,6 +69,8 @@ export class FishApplet extends Applet {
   // either shows fortune message or error (or a special popup on fools day)
   private messagePopup!: BasePopupMenu
 
+  private lastCommandOutput: string
+
   constructor(metadata: Metadata, orientation: imports.gi.St.Side, panelHeight: number, instanceId: number) {
     super(orientation, panelHeight, instanceId)
 
@@ -87,6 +89,8 @@ export class FishApplet extends Applet {
     this.startPeriodicFoolsDayCheck()
 
     this.errorManager = new FishAppletErrorManager()
+
+    this.lastCommandOutput = ""
 
     this.bindSettings()
     this.initApplet()
@@ -129,9 +133,12 @@ export class FishApplet extends Applet {
     this.signalManager.connect(themeManager, "theme-set", this.changeTheme.bind(this), this)
 
     this.initAnimation()
+
     this.menuManager = new PopupMenuManager(this)
     this.updateMessagePopup()
-    this.updateName() // MessagePopup needs to be initialized before!
+
+    // inits the tooltip
+    this.updateName()
 
     // TODO: the call here is to check at startup the defined command.
     // However the "useful command" warning is always shown then if one of it is in use.
@@ -174,6 +181,7 @@ export class FishApplet extends Applet {
             launcher: this,
             orientation: this.orientation,
             name: this.settingsObject.name,
+            message: this.lastCommandOutput,
             onSpeakAgain: this.runCommand.bind(this),
             onClose: () => this.messagePopup.close(true),
           },
@@ -225,12 +233,6 @@ export class FishApplet extends Applet {
     // create and add the new one
     this.messagePopup = PopupMenuFactory.createPopupMenu(popupMenuProps)
     this.menuManager.addMenu(this.messagePopup)
-
-    // for fish message popup, need to run command already once so that its result will be shown in the popup
-    // TODO: maybe store last message and pass in constructor instead
-    if (popupMenuType === "FishMessage") {
-      this.runCommand()
-    }
   }
 
   private isTargetPopupMenuAlreadyActive(targetPopupMenuTyp: PopupMenuType): boolean {
@@ -275,6 +277,7 @@ export class FishApplet extends Applet {
         if (this.messagePopup instanceof FishMessagePopupMenu) {
           this.messagePopup.updateMessage(message)
         }
+        this.lastCommandOutput = message
       },
       (error) => {
         this.handleError(error, "commandExecution")

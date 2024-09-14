@@ -1150,6 +1150,7 @@ class FishApplet extends Applet {
         this.foolsDayTimeoutId = 0;
         this.startPeriodicFoolsDayCheck();
         this.errorManager = new FishAppletErrorManager();
+        this.lastCommandOutput = "";
         this.bindSettings();
         this.initApplet();
     }
@@ -1212,6 +1213,7 @@ class FishApplet extends Applet {
                         launcher: this,
                         orientation: this.orientation,
                         name: this.settingsObject.name,
+                        message: this.lastCommandOutput,
                         onSpeakAgain: this.runCommand.bind(this),
                         onClose: () => this.messagePopup.close(true),
                     },
@@ -1256,9 +1258,6 @@ class FishApplet extends Applet {
         }
         this.messagePopup = PopupMenuFactory.createPopupMenu(popupMenuProps);
         this.menuManager.addMenu(this.messagePopup);
-        if (popupMenuType === "FishMessage") {
-            this.runCommand();
-        }
     }
     isTargetPopupMenuAlreadyActive(targetPopupMenuTyp) {
         switch (targetPopupMenuTyp) {
@@ -1297,6 +1296,7 @@ class FishApplet extends Applet {
             if (this.messagePopup instanceof FishMessagePopupMenu) {
                 this.messagePopup.updateMessage(message);
             }
+            this.lastCommandOutput = message;
         }, (error) => {
             this.handleError(error, "commandExecution");
         });
