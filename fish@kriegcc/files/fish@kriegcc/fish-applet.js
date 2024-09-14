@@ -1250,6 +1250,9 @@ class FishApplet extends Applet {
             };
         }
         if (this.menuManager) {
+            if (this.messagePopup) {
+                this.menuManager.removeMenu(this.messagePopup);
+            }
             this.menuManager.destroy();
         }
         this.menuManager = new PopupMenuManager(this);

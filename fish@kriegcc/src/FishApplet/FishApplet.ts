@@ -215,17 +215,23 @@ export class FishApplet extends Applet {
       }
     }
 
-    // reset menu manager and create new the new popup with the defined props from above
+    // reset menu manager and create new the new popup menu with the defined props from above
     if (this.menuManager) {
+      // The active popup menu needs to be closed or removed before destroying the menu manager
+      // Otherwise, it crashes Cinnamon when the menu is opened while the manager gets destroyed.
+      // I would have expected that this is handled in destroy() method below, but it isn't.
+      if (this.messagePopup) {
+        this.menuManager.removeMenu(this.messagePopup)
+      }
       this.menuManager.destroy()
     }
     this.menuManager = new PopupMenuManager(this)
-    // returns a popup menu instance with respective popup menu type (fishMessage, error, foolsday)
+    // returns a popup menu instance with respective popup menu type (fishMessage, error, fools day)
     this.messagePopup = PopupMenuFactory.createPopupMenu(popupMenuProps)
     this.menuManager.addMenu(this.messagePopup)
 
     // for fish message popup, need to run command already once so that its result will be shown in the popup
-    // TODO: maybe do on applet click instead ..
+    // TODO: maybe store last message and pass in constructor instead
     if (popupMenuType === "FishMessage") {
       this.runCommand()
     }
