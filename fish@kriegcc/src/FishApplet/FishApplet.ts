@@ -308,6 +308,14 @@ export class FishApplet extends Applet {
       this.settingsObject.imagePath = newValue
       this.updateAnimationImage(newValue)
     })
+
+    // advanced settings
+    this.settings.bind<boolean>(
+      "keyAnimationAutoMargins",
+      "autoAnimationMargins",
+      this.updateAnimationAutoMargins.bind(this),
+    )
+    this.settings.bind<number>("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this))
   }
 
   // -------------------------------------------------------------------------------------------------
@@ -432,6 +440,8 @@ If you prefer not to install any additional packages, you can change the command
       rotation = 90
     }
 
+    // TODO: check height and width
+
     const renderOptions: RenderOptions = {
       height,
       width,
@@ -537,6 +547,18 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
+  private updateAnimationAutoMargins(_: boolean): void {
+    // just need to re-init animation with changed margins
+    this.initAnimation()
+  }
+
+  private updateAnimationMargins(_: number): void {
+    // apply new margins only if auto margins are disabled
+    if (!this.settingsObject.autoAnimationMargins) {
+      this.initAnimation()
+    }
+  }
+
   // Applet is in a normal state. Show the fish.
   private updateApplet(): void {
     if (this.errorManager.hasErrors()) {
@@ -638,13 +660,17 @@ If you prefer not to install any additional packages, you can change the command
     return getThemeAppearance(DEFAULT_APPLET_CLASS_NAME) === "Dark" ? true : false
   }
 
-  // reads and calculate margins from active CSS stylesheet, element "applet-box"
   private getAppletMargin(): number {
-    const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME)
-    const margin =
-      themeNode.get_horizontal_padding() +
-      themeNode.get_border_width(imports.gi.St.Side.TOP) +
-      themeNode.get_border_width(imports.gi.St.Side.BOTTOM)
-    return margin
+    if (this.settingsObject.autoAnimationMargins) {
+      // reads and calculate margins from active CSS stylesheet, element "applet-box"
+      const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME)
+      const margin =
+        themeNode.get_horizontal_padding() +
+        themeNode.get_border_width(imports.gi.St.Side.TOP) +
+        themeNode.get_border_width(imports.gi.St.Side.BOTTOM)
+      return margin
+    }
+
+    return this.settingsObject.customAnimationMargins
   }
 }
