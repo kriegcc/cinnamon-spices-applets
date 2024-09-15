@@ -10,4 +10,8 @@ export type AppletSettingsProps = {
   frames: number
   pausePerFrameInSeconds: number
   rotate: boolean
+  // advanced settings
+  // animation
+  autoAnimationMargins: boolean
+  customAnimationMargins: number
 }

@@ -1313,6 +1313,8 @@ class FishApplet extends Applet {
             this.settingsObject.imagePath = newValue;
             this.updateAnimationImage(newValue);
         });
+        this.settings.bind("keyAnimationAutoMargins", "autoAnimationMargins", this.updateAnimationAutoMargins.bind(this));
+        this.settings.bind("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this));
     }
     openCinnamonSpicesWebsite() {
         openWebsite(FISH_APPLET_CINNAMON_SPICES_WEBSITE);
@@ -1503,6 +1505,14 @@ If you prefer not to install any additional packages, you can change the command
             this.handleError(error, "animation");
         }
     }
+    updateAnimationAutoMargins(_) {
+        this.initAnimation();
+    }
+    updateAnimationMargins(_) {
+        if (!this.settingsObject.autoAnimationMargins) {
+            this.initAnimation();
+        }
+    }
     updateApplet() {
         if (this.errorManager.hasErrors()) {
             return;
@@ -1581,11 +1591,14 @@ If you prefer not to install any additional packages, you can change the command
         return getThemeAppearance(DEFAULT_APPLET_CLASS_NAME) === "Dark" ? true : false;
     }
     getAppletMargin() {
-        const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME);
-        const margin = themeNode.get_horizontal_padding() +
-            themeNode.get_border_width(imports.gi.St.Side.TOP) +
-            themeNode.get_border_width(imports.gi.St.Side.BOTTOM);
-        return margin;
+        if (this.settingsObject.autoAnimationMargins) {
+            const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME);
+            const margin = themeNode.get_horizontal_padding() +
+                themeNode.get_border_width(imports.gi.St.Side.TOP) +
+                themeNode.get_border_width(imports.gi.St.Side.BOTTOM);
+            return margin;
+        }
+        return this.settingsObject.customAnimationMargins;
     }
 }
 

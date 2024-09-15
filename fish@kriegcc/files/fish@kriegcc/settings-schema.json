@@ -3,6 +3,7 @@
     "type": "layout",
     "pages": [
       "pagePreferences",
+      "pageAdvancedSettings",
       "pageHelp",
       "pageAbout"
     ],
@@ -12,6 +13,13 @@
       "sections": [
         "sectionGeneral",
         "sectionAnimation"
+      ]
+    },
+    "pageAdvancedSettings": {
+      "type": "page",
+      "title": "Advanced Settings",
+      "sections": [
+        "sectionAdvancedAnimationSettings"
       ]
     },
     "pageHelp": {
@@ -49,6 +57,14 @@
         "keyFrames",
         "keyPausePerFrameInSeconds",
         "keyRotate"
+      ]
+    },
+    "sectionAdvancedAnimationSettings": {
+      "type": "section",
+      "title": "Advanced Animation Settings",
+      "keys": [
+        "keyAnimationAutoMargins",
+        "keyAnimationMargins"
       ]
     },
     "sectionInstruction": {
@@ -148,6 +164,23 @@
     "widget": "ImageChooser",
     "default": "~/.local/share/cinnamon/applets/fish@kriegcc/animations/wanda.svg",
     "tooltip": "Use this field to select the image to display in the applet. You can select an image that is supplied with the applet or a personal image."
+  },
+  "keyAnimationAutoMargins": {
+    "type": "switch",
+    "default": true,
+    "description": "Auto margins",
+    "tooltip": "Check this to use the default margins from theme."
+  },
+  "keyAnimationMargins": {
+    "type": "spinbutton",
+    "default": 8,
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "units": "px",
+    "description": "Margins around the animation frame",
+    "tooltip": "Use this spin box to specify the space around (top, bottom, left, right) the animation frame shown in the panel.",
+    "dependency": "!keyAnimationAutoMargins"
   },
   "keyInstructionsText": {
     "type": "label",
