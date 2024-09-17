@@ -99,6 +99,7 @@ export class FishApplet extends Applet {
   public override on_panel_height_changed(): void {
     this.panelHeight = this._panelHeight
     this.initAnimation()
+    this.updateApplet()
   }
 
   public override on_applet_removed_from_panel(): void {
@@ -310,12 +311,20 @@ export class FishApplet extends Applet {
     })
 
     // advanced settings
-    this.settings.bind<boolean>(
-      "keyAnimationAutoMargins",
-      "autoAnimationMargins",
-      this.updateAnimationAutoMargins.bind(this),
+    this.settings.bind("keyAnimationAutoMargins", "autoAnimationMargins", this.updateAnimationAutoMargins.bind(this))
+    this.settings.bind("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this))
+    this.settings.bind(
+      "keyAnimationAutoFitDimensions",
+      "autoFitAnimationDimensions",
+      this.updateAutoFitAnimationDimensions.bind(this),
     )
-    this.settings.bind<number>("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this))
+    this.settings.bind(
+      "keyAnimationPreserveAspectRatio",
+      "preserveAnimationAspectRatio",
+      this.updatePreserveAnimationAspectRatio.bind(this),
+    )
+    this.settings.bind("keyAnimationHeight", "customAnimationHeight", this.updateCustomAnimationHeight.bind(this))
+    this.settings.bind("keyAnimationWidth", "customAnimationWidth", this.updateCustomAnimationWidth.bind(this))
   }
 
   // -------------------------------------------------------------------------------------------------
@@ -402,7 +411,6 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
-  // Sets the size of the animation to fit into the panel
   private determineAnimationRenderOptions(): RenderOptions {
     let isRotated = this.settingsObject.rotate
     // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
@@ -417,30 +425,38 @@ If you prefer not to install any additional packages, you can change the command
     const margin = this.getAppletMargin()
     const isInHorizontalPanel = isHorizontalOriented(this.orientation)
 
-    if (isInHorizontalPanel) {
-      if (isRotated) {
-        width = this.panelHeight - margin
-        height = undefined
+    if (this.settingsObject.autoFitAnimationDimensions) {
+      // default, fit animation frame in panel
+      // TODO: maybe move to separate function
+      if (isInHorizontalPanel) {
+        if (isRotated) {
+          width = this.panelHeight - margin
+          height = undefined
+        } else {
+          width = undefined
+          height = this.panelHeight - margin
+        }
       } else {
-        width = undefined
-        height = this.panelHeight - margin
+        // on a vertical panel
+        if (isRotated) {
+          width = undefined
+          height = this.panelHeight - margin
+        } else {
+          width = this.panelHeight - margin
+          height = undefined
+        }
       }
     } else {
-      // on a vertical panel
-      if (isRotated) {
-        width = undefined
-        height = this.panelHeight - margin
-      } else {
-        width = this.panelHeight - margin
-        height = undefined
+      // advanced settings, use user specified dimensions
+      height = this.settingsObject.customAnimationHeight
+      if (!this.settingsObject.preserveAnimationAspectRatio) {
+        width = this.settingsObject.customAnimationWidth
       }
     }
 
     if (isRotated) {
       rotation = 90
     }
-
-    // TODO: check height and width
 
     const renderOptions: RenderOptions = {
       height,
@@ -451,18 +467,18 @@ If you prefer not to install any additional packages, you can change the command
   }
 
   private initAnimation(): void {
-    const configuration: AnimatedFishProps = {
-      imagePath: this.settingsObject.imagePath,
-      frames: this.settingsObject.frames,
-      pausePerFrameInMs: Math.floor(this.settingsObject.pausePerFrameInSeconds * 1000),
-      renderOptions: this.determineAnimationRenderOptions(),
-      isFoolsDay: this.isFoolsDay,
-    }
-
-    // delete previous error if there were any
-    this.errorManager.deleteError("animation")
-
     try {
+      // delete previous error if there were any
+      this.errorManager.deleteError("animation")
+
+      const configuration: AnimatedFishProps = {
+        imagePath: this.settingsObject.imagePath,
+        frames: this.settingsObject.frames,
+        pausePerFrameInMs: Math.floor(this.settingsObject.pausePerFrameInSeconds * 1000),
+        renderOptions: this.determineAnimationRenderOptions(),
+        isFoolsDay: this.isFoolsDay,
+      }
+
       if (this.animatedFish === undefined) {
         this.animatedFish = new AnimatedFish(configuration)
       } else {
@@ -547,15 +563,45 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
-  private updateAnimationAutoMargins(_: boolean): void {
+  private updateAnimationAutoMargins(): void {
     // just need to re-init animation with changed margins
     this.initAnimation()
+    this.updateApplet()
   }
 
-  private updateAnimationMargins(_: number): void {
+  private updateAnimationMargins(): void {
     // apply new margins only if auto margins are disabled
     if (!this.settingsObject.autoAnimationMargins) {
       this.initAnimation()
+      this.updateApplet()
+    }
+  }
+
+  private updateAutoFitAnimationDimensions(): void {
+    // just need to re-init animation with changed margins
+    this.initAnimation()
+    this.updateApplet()
+  }
+
+  private updatePreserveAnimationAspectRatio(): void {
+    // just need to re-init animation with updated dimensions
+    this.initAnimation()
+    this.updateApplet()
+  }
+
+  private updateCustomAnimationHeight(): void {
+    // apply new margins only if auto fit is turned off
+    if (!this.settingsObject.autoFitAnimationDimensions) {
+      this.initAnimation()
+      this.updateApplet()
+    }
+  }
+
+  private updateCustomAnimationWidth(): void {
+    // apply new margins only if auto fit is turned off and aspect ratio can be ignored
+    if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationAspectRatio) {
+      this.initAnimation()
+      this.updateApplet()
     }
   }
 
