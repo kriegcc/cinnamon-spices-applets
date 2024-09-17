@@ -1322,6 +1322,7 @@ class FishApplet extends Applet {
         this.settings.bind("keyAnimationAutoMargins", "autoAnimationMargins", this.updateAnimationAutoMargins.bind(this));
         this.settings.bind("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this));
         this.settings.bind("keyAnimationAutoFitDimensions", "autoFitAnimationDimensions", this.updateAutoFitAnimationDimensions.bind(this));
+        this.settings.bind("keyAnimationPreserveOriginalDimensions", "preserveAnimationOriginalDimensions", this.updatePreserveAnimationOriginalDimensions.bind(this));
         this.settings.bind("keyAnimationPreserveAspectRatio", "preserveAnimationAspectRatio", this.updatePreserveAnimationAspectRatio.bind(this));
         this.settings.bind("keyAnimationHeight", "customAnimationHeight", this.updateCustomAnimationHeight.bind(this));
         this.settings.bind("keyAnimationWidth", "customAnimationWidth", this.updateCustomAnimationWidth.bind(this));
@@ -1419,6 +1420,10 @@ If you prefer not to install any additional packages, you can change the command
                     height = undefined;
                 }
             }
+        }
+        else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+            width = undefined;
+            height = undefined;
         }
         else {
             height = this.settingsObject.customAnimationHeight;
@@ -1537,18 +1542,24 @@ If you prefer not to install any additional packages, you can change the command
         this.initAnimation();
         this.updateApplet();
     }
+    updatePreserveAnimationOriginalDimensions() {
+        this.initAnimation();
+        this.updateApplet();
+    }
     updatePreserveAnimationAspectRatio() {
         this.initAnimation();
         this.updateApplet();
     }
     updateCustomAnimationHeight() {
-        if (!this.settingsObject.autoFitAnimationDimensions) {
+        if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationOriginalDimensions) {
             this.initAnimation();
             this.updateApplet();
         }
     }
     updateCustomAnimationWidth() {
-        if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationAspectRatio) {
+        if (!this.settingsObject.autoFitAnimationDimensions &&
+            !this.settingsObject.preserveAnimationAspectRatio &&
+            !this.settingsObject.preserveAnimationOriginalDimensions) {
             this.initAnimation();
             this.updateApplet();
         }

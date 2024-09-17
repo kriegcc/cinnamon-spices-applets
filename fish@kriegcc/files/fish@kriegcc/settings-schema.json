@@ -67,8 +67,10 @@
         "keyAnimationMargins",
         "keyAnimationAutoFitDimensions",
         "keyAnimationPreserveAspectRatio",
+        "keyAnimationPreserveOriginalDimensions",
         "keyAnimationHeight",
-        "keyAnimationWidth"
+        "keyAnimationWidth",
+        "keyAnimationRotation"
       ]
     },
     "sectionInstruction": {
@@ -190,13 +192,21 @@
     "type": "switch",
     "default": true,
     "description": "Auto-fit dimensions",
-    "tooltip": "Enable this option to automatically adjust the animation frame's dimensions to fit optimally within the panel."
+    "tooltip": "Enable this option to automatically adjust the animation frame's dimensions to fit optimally within the panel.",
+    "dependency": "!keyAnimationAutoMargins"
   },
   "keyAnimationPreserveAspectRatio": {
     "type": "switch",
     "default": true,
     "description": "Preserve aspect ratio",
     "tooltip": "Enable this option to maintain the original aspect ratio of the animation. If enabled, the specified width will be ignored.",
+    "dependency": "!keyAnimationAutoFitDimensions"
+  },
+  "keyAnimationPreserveOriginalDimensions": {
+    "type": "switch",
+    "default": false,
+    "description": "Preserve original size",
+    "tooltip": "Enable this option to use the original dimensions of the image. When enabled, custom width settings will be ignored.",
     "dependency": "!keyAnimationAutoFitDimensions"
   },
   "keyAnimationHeight": {
@@ -220,6 +230,12 @@
     "description": "Width",
     "tooltip": "Use this spin box to specify a custom width for the animation frame. This value is ignored if 'Preserve aspect ratio' is enabled.",
     "dependency": "!keyAnimationAutoFitDimensions"
+  },
+  "keyAnimationRotation": {
+    "type": "switch",
+    "default": false,
+    "description": "Rotate animation by 90°",
+    "tooltip": "Enable this option to rotate the animation by 90°. This setting applies even when the applet is placed on a horizontal panel."
   },
   "keyInstructionsText": {
     "type": "label",

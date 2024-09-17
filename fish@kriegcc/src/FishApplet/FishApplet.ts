@@ -319,6 +319,11 @@ export class FishApplet extends Applet {
       this.updateAutoFitAnimationDimensions.bind(this),
     )
     this.settings.bind(
+      "keyAnimationPreserveOriginalDimensions",
+      "preserveAnimationOriginalDimensions",
+      this.updatePreserveAnimationOriginalDimensions.bind(this),
+    )
+    this.settings.bind(
       "keyAnimationPreserveAspectRatio",
       "preserveAnimationAspectRatio",
       this.updatePreserveAnimationAspectRatio.bind(this),
@@ -446,6 +451,10 @@ If you prefer not to install any additional packages, you can change the command
           height = undefined
         }
       }
+    } else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+      // use image's original dimensions
+      width = undefined
+      height = undefined
     } else {
       // advanced settings, use user specified dimensions
       height = this.settingsObject.customAnimationHeight
@@ -583,6 +592,12 @@ If you prefer not to install any additional packages, you can change the command
     this.updateApplet()
   }
 
+  private updatePreserveAnimationOriginalDimensions(): void {
+    // just need to re-init animation
+    this.initAnimation()
+    this.updateApplet()
+  }
+
   private updatePreserveAnimationAspectRatio(): void {
     // just need to re-init animation with updated dimensions
     this.initAnimation()
@@ -590,8 +605,8 @@ If you prefer not to install any additional packages, you can change the command
   }
 
   private updateCustomAnimationHeight(): void {
-    // apply new margins only if auto fit is turned off
-    if (!this.settingsObject.autoFitAnimationDimensions) {
+    // apply new margins only if auto fit is turned off and original image size is ignored
+    if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationOriginalDimensions) {
       this.initAnimation()
       this.updateApplet()
     }
@@ -599,7 +614,11 @@ If you prefer not to install any additional packages, you can change the command
 
   private updateCustomAnimationWidth(): void {
     // apply new margins only if auto fit is turned off and aspect ratio can be ignored
-    if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationAspectRatio) {
+    if (
+      !this.settingsObject.autoFitAnimationDimensions &&
+      !this.settingsObject.preserveAnimationAspectRatio &&
+      !this.settingsObject.preserveAnimationOriginalDimensions
+    ) {
       this.initAnimation()
       this.updateApplet()
     }
