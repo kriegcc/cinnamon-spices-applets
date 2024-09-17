@@ -14,4 +14,8 @@ export type AppletSettingsProps = {
   // animation
   autoAnimationMargins: boolean
   customAnimationMargins: number
+  autoFitAnimationDimensions: boolean
+  preserveAnimationAspectRatio: boolean
+  customAnimationHeight: number
+  customAnimationWidth: number
 }

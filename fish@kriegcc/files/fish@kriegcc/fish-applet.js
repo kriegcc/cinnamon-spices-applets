@@ -324,7 +324,6 @@ const AnimatedFish = GObject.registerClass(class AnimatedFish extends AnimatedFi
     }
     update(props) {
         this.props = props;
-        this.cleanUp();
         this.initAnimation();
     }
     updateImage(imagePath) {
@@ -486,6 +485,12 @@ function getPixbufFromFileAtScale(file, width, height, preserveAspectRatio) {
     const filePath = file.get_path();
     if (!filePath) {
         throw new Error(`File path is null.`);
+    }
+    if (height !== -1 && height < 1) {
+        throw new Error(`Invalid image height value: ${height}`);
+    }
+    if (width !== -1 && width < 1) {
+        throw new Error(`Invalid image width value: ${width}`);
     }
     const pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(filePath, width, height, preserveAspectRatio);
     if (!pixbuf) {
@@ -1157,6 +1162,7 @@ class FishApplet extends Applet {
     on_panel_height_changed() {
         this.panelHeight = this._panelHeight;
         this.initAnimation();
+        this.updateApplet();
     }
     on_applet_removed_from_panel() {
         var _a;
@@ -1315,6 +1321,10 @@ class FishApplet extends Applet {
         });
         this.settings.bind("keyAnimationAutoMargins", "autoAnimationMargins", this.updateAnimationAutoMargins.bind(this));
         this.settings.bind("keyAnimationMargins", "customAnimationMargins", this.updateAnimationMargins.bind(this));
+        this.settings.bind("keyAnimationAutoFitDimensions", "autoFitAnimationDimensions", this.updateAutoFitAnimationDimensions.bind(this));
+        this.settings.bind("keyAnimationPreserveAspectRatio", "preserveAnimationAspectRatio", this.updatePreserveAnimationAspectRatio.bind(this));
+        this.settings.bind("keyAnimationHeight", "customAnimationHeight", this.updateCustomAnimationHeight.bind(this));
+        this.settings.bind("keyAnimationWidth", "customAnimationWidth", this.updateCustomAnimationWidth.bind(this));
     }
     openCinnamonSpicesWebsite() {
         openWebsite(FISH_APPLET_CINNAMON_SPICES_WEBSITE);
@@ -1388,24 +1398,32 @@ If you prefer not to install any additional packages, you can change the command
         let rotation = undefined;
         const margin = this.getAppletMargin();
         const isInHorizontalPanel = isHorizontalOriented(this.orientation);
-        if (isInHorizontalPanel) {
-            if (isRotated) {
-                width = this.panelHeight - margin;
-                height = undefined;
+        if (this.settingsObject.autoFitAnimationDimensions) {
+            if (isInHorizontalPanel) {
+                if (isRotated) {
+                    width = this.panelHeight - margin;
+                    height = undefined;
+                }
+                else {
+                    width = undefined;
+                    height = this.panelHeight - margin;
+                }
             }
             else {
-                width = undefined;
-                height = this.panelHeight - margin;
+                if (isRotated) {
+                    width = undefined;
+                    height = this.panelHeight - margin;
+                }
+                else {
+                    width = this.panelHeight - margin;
+                    height = undefined;
+                }
             }
         }
         else {
-            if (isRotated) {
-                width = undefined;
-                height = this.panelHeight - margin;
-            }
-            else {
-                width = this.panelHeight - margin;
-                height = undefined;
+            height = this.settingsObject.customAnimationHeight;
+            if (!this.settingsObject.preserveAnimationAspectRatio) {
+                width = this.settingsObject.customAnimationWidth;
             }
         }
         if (isRotated) {
@@ -1419,15 +1437,15 @@ If you prefer not to install any additional packages, you can change the command
         return renderOptions;
     }
     initAnimation() {
-        const configuration = {
-            imagePath: this.settingsObject.imagePath,
-            frames: this.settingsObject.frames,
-            pausePerFrameInMs: Math.floor(this.settingsObject.pausePerFrameInSeconds * 1000),
-            renderOptions: this.determineAnimationRenderOptions(),
-            isFoolsDay: this.isFoolsDay,
-        };
-        this.errorManager.deleteError("animation");
         try {
+            this.errorManager.deleteError("animation");
+            const configuration = {
+                imagePath: this.settingsObject.imagePath,
+                frames: this.settingsObject.frames,
+                pausePerFrameInMs: Math.floor(this.settingsObject.pausePerFrameInSeconds * 1000),
+                renderOptions: this.determineAnimationRenderOptions(),
+                isFoolsDay: this.isFoolsDay,
+            };
             if (this.animatedFish === undefined) {
                 this.animatedFish = new AnimatedFish(configuration);
             }
@@ -1505,12 +1523,34 @@ If you prefer not to install any additional packages, you can change the command
             this.handleError(error, "animation");
         }
     }
-    updateAnimationAutoMargins(_) {
+    updateAnimationAutoMargins() {
         this.initAnimation();
+        this.updateApplet();
     }
-    updateAnimationMargins(_) {
+    updateAnimationMargins() {
         if (!this.settingsObject.autoAnimationMargins) {
             this.initAnimation();
+            this.updateApplet();
+        }
+    }
+    updateAutoFitAnimationDimensions() {
+        this.initAnimation();
+        this.updateApplet();
+    }
+    updatePreserveAnimationAspectRatio() {
+        this.initAnimation();
+        this.updateApplet();
+    }
+    updateCustomAnimationHeight() {
+        if (!this.settingsObject.autoFitAnimationDimensions) {
+            this.initAnimation();
+            this.updateApplet();
+        }
+    }
+    updateCustomAnimationWidth() {
+        if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationAspectRatio) {
+            this.initAnimation();
+            this.updateApplet();
         }
     }
     updateApplet() {

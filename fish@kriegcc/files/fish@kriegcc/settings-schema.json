@@ -64,7 +64,11 @@
       "title": "Advanced Animation Settings",
       "keys": [
         "keyAnimationAutoMargins",
-        "keyAnimationMargins"
+        "keyAnimationMargins",
+        "keyAnimationAutoFitDimensions",
+        "keyAnimationPreserveAspectRatio",
+        "keyAnimationHeight",
+        "keyAnimationWidth"
       ]
     },
     "sectionInstruction": {
@@ -179,8 +183,43 @@
     "step": 1,
     "units": "px",
     "description": "Margins around the animation frame",
-    "tooltip": "Use this spin box to specify the space around (top, bottom, left, right) the animation frame shown in the panel.",
+    "tooltip": "Use this spin box to specify the margins around the animation frame shown in the panel.",
     "dependency": "!keyAnimationAutoMargins"
+  },
+  "keyAnimationAutoFitDimensions": {
+    "type": "switch",
+    "default": true,
+    "description": "Auto-fit dimensions",
+    "tooltip": "Enable this option to automatically adjust the animation frame's dimensions to fit optimally within the panel."
+  },
+  "keyAnimationPreserveAspectRatio": {
+    "type": "switch",
+    "default": true,
+    "description": "Preserve aspect ratio",
+    "tooltip": "Enable this option to maintain the original aspect ratio of the animation. If enabled, the specified width will be ignored.",
+    "dependency": "!keyAnimationAutoFitDimensions"
+  },
+  "keyAnimationHeight": {
+    "type": "spinbutton",
+    "default": 40,
+    "min": 1,
+    "max": 480,
+    "step": 1,
+    "units": "px",
+    "description": "Height",
+    "tooltip": "Use this spin box to specify a custom height for the animation frame.",
+    "dependency": "!keyAnimationAutoFitDimensions"
+  },
+  "keyAnimationWidth": {
+    "type": "spinbutton",
+    "default": 40,
+    "min": 1,
+    "max": 480,
+    "step": 1,
+    "units": "px",
+    "description": "Width",
+    "tooltip": "Use this spin box to specify a custom width for the animation frame. This value is ignored if 'Preserve aspect ratio' is enabled.",
+    "dependency": "!keyAnimationAutoFitDimensions"
   },
   "keyInstructionsText": {
     "type": "label",
