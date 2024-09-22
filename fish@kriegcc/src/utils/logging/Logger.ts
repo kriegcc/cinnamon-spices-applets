@@ -3,7 +3,7 @@ const { isError } = imports.ui.main
 
 export type LogLevel = "Info" | "Debug" | "Warning" | "Error"
 
-const DEFAULT_LOG_LEVEL = "Info"
+const DEFAULT_LOG_LEVEL = "Debug"
 const logLevelPriority: Record<LogLevel, number> = {
   Error: 1,
   Warning: 2,
