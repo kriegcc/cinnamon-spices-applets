@@ -73,7 +73,7 @@ const REPORT_BUGS_INSTRUCTIONS_WEBSITE = "https://github.com/linuxmint/cinnamon-
 ;// ./src/utils/logging/Logger.ts
 
 const { isError } = imports.ui.main;
-const DEFAULT_LOG_LEVEL = "Info";
+const DEFAULT_LOG_LEVEL = "Debug";
 const logLevelPriority = {
     Error: 1,
     Warning: 2,
@@ -1389,6 +1389,81 @@ If you prefer not to install any additional packages, you can change the command
             this.handleError(error, "command");
         }
     }
+    newDetermineAnimationRenderOptions() {
+        let height = undefined;
+        let width = undefined;
+        let rotation = undefined;
+        let isRotated = this.settingsObject.rotate;
+        if (isRotated && isHorizontalOriented(this.orientation)) {
+            isRotated = false;
+        }
+        if (isRotated) {
+            rotation = 90;
+        }
+        const isInHorizontalPanel = isHorizontalOriented(this.orientation);
+        const margins = this.settingsObject.autoAnimationMargins
+            ? this.getAppletMargin()
+            : this.settingsObject.customAnimationMargins;
+        const isAutoFit = this.settingsObject.autoFitAnimationDimensions;
+        const isPreserveDimensions = this.settingsObject.preserveAnimationOriginalDimensions;
+        const isPreserveAspectRatio = this.settingsObject.preserveAnimationAspectRatio;
+        const customWidth = this.settingsObject.customAnimationWidth;
+        const customHeight = this.settingsObject.customAnimationHeight;
+        if (isAutoFit) {
+            if (isInHorizontalPanel) {
+                if (isRotated) {
+                    height = undefined;
+                    width = this.panelHeight - margins;
+                }
+                else {
+                    height = this.panelHeight - margins;
+                    width = undefined;
+                }
+            }
+            else {
+                if (isRotated) {
+                    height = this.panelHeight - margins;
+                    width = undefined;
+                }
+                else {
+                    height = undefined;
+                    width = this.panelHeight - margins;
+                }
+            }
+        }
+        else if (isPreserveDimensions) {
+            height = undefined;
+            width = undefined;
+        }
+        else {
+            height = customHeight;
+            width = customWidth;
+            if (isPreserveAspectRatio) {
+                if (isInHorizontalPanel) {
+                    if (isRotated) {
+                        height = undefined;
+                    }
+                    else {
+                        width = undefined;
+                    }
+                }
+                else {
+                    if (isRotated) {
+                        width = undefined;
+                    }
+                    else {
+                        height = undefined;
+                    }
+                }
+            }
+        }
+        const renderOptions = {
+            height,
+            width,
+            rotation,
+        };
+        return renderOptions;
+    }
     determineAnimationRenderOptions() {
         let isRotated = this.settingsObject.rotate;
         if (isRotated && isHorizontalOriented(this.orientation)) {
@@ -1533,33 +1608,68 @@ If you prefer not to install any additional packages, you can change the command
         this.updateApplet();
     }
     updateAnimationMargins() {
-        if (!this.settingsObject.autoAnimationMargins) {
+        if (this.settingsObject.autoAnimationMargins) {
+            logger.logDebug("Auto margins option is turned on. The custom margin value is ignored.");
+        }
+        else {
             this.initAnimation();
             this.updateApplet();
         }
     }
     updateAutoFitAnimationDimensions() {
-        this.initAnimation();
-        this.updateApplet();
-    }
-    updatePreserveAnimationOriginalDimensions() {
-        this.initAnimation();
-        this.updateApplet();
+        if (this.settingsObject.autoAnimationMargins) {
+            logger.logDebug("Auto margins option is turned on and auto-fit is always applied.");
+        }
+        else {
+            this.initAnimation();
+            this.updateApplet();
+        }
     }
     updatePreserveAnimationAspectRatio() {
         this.initAnimation();
         this.updateApplet();
     }
+    updatePreserveAnimationOriginalDimensions() {
+        if (this.settingsObject.autoAnimationMargins) {
+            logger.logDebug("Auto margins option is turned on. Auto-fit is applied and the original images's dimensions cannot be preserved.");
+        }
+        else if (this.settingsObject.autoFitAnimationDimensions) {
+            logger.logDebug("Auto-fit option is turned on. The original image's dimensions cannot be preserved.");
+        }
+        else {
+            this.initAnimation();
+            this.updateApplet();
+        }
+    }
     updateCustomAnimationHeight() {
-        if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationOriginalDimensions) {
+        if (this.settingsObject.autoAnimationMargins) {
+            logger.logDebug("Auto margins option is turned on. Any custom height is ignored");
+        }
+        else if (this.settingsObject.autoFitAnimationDimensions) {
+            logger.logDebug("Auto-fit option is turned on. Any custom height is ignored.");
+        }
+        else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+            logger.logDebug("Preserve images's original dimensions option is turned on. Any custom height is ignored.");
+        }
+        else {
             this.initAnimation();
             this.updateApplet();
         }
     }
     updateCustomAnimationWidth() {
-        if (!this.settingsObject.autoFitAnimationDimensions &&
-            !this.settingsObject.preserveAnimationAspectRatio &&
-            !this.settingsObject.preserveAnimationOriginalDimensions) {
+        if (this.settingsObject.autoAnimationMargins) {
+            logger.logDebug("Auto margins option is turned on. Any custom width is ignored");
+        }
+        else if (this.settingsObject.autoFitAnimationDimensions) {
+            logger.logDebug("Auto-fit option is turned on. Any custom width is ignored.");
+        }
+        else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+            logger.logDebug("Preserve images's original dimensions option is turned on. Any custom width is ignored.");
+        }
+        else if (this.settingsObject.preserveAnimationAspectRatio) {
+            logger.logDebug("Preserve images's original aspect ratio option is turned on. Any custom width is ignored.");
+        }
+        else {
             this.initAnimation();
             this.updateApplet();
         }

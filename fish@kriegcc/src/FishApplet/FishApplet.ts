@@ -416,6 +416,85 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
+  // TODO:
+  private newDetermineAnimationRenderOptions(): RenderOptions {
+    let height = undefined
+    let width = undefined
+    let rotation: AnimationRotation | undefined = undefined
+
+    let isRotated = this.settingsObject.rotate
+    // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
+    if (isRotated && isHorizontalOriented(this.orientation)) {
+      isRotated = false
+    }
+    if (isRotated) {
+      rotation = 90
+    }
+    // TODO: rotation override
+
+    const isInHorizontalPanel = isHorizontalOriented(this.orientation)
+
+    const margins = this.settingsObject.autoAnimationMargins
+      ? this.getAppletMargin()
+      : this.settingsObject.customAnimationMargins
+
+    const isAutoFit = this.settingsObject.autoFitAnimationDimensions
+
+    const isPreserveDimensions = this.settingsObject.preserveAnimationOriginalDimensions
+    const isPreserveAspectRatio = this.settingsObject.preserveAnimationAspectRatio
+
+    const customWidth = this.settingsObject.customAnimationWidth
+    const customHeight = this.settingsObject.customAnimationHeight
+
+    if (isAutoFit) {
+      if (isInHorizontalPanel) {
+        if (isRotated) {
+          height = undefined
+          width = this.panelHeight - margins
+        } else {
+          height = this.panelHeight - margins
+          width = undefined
+        }
+      } else {
+        if (isRotated) {
+          height = this.panelHeight - margins
+          width = undefined
+        } else {
+          height = undefined
+          width = this.panelHeight - margins
+        }
+      }
+    } else if (isPreserveDimensions) {
+      height = undefined
+      width = undefined
+    } else {
+      height = customHeight
+      width = customWidth
+      if (isPreserveAspectRatio) {
+        if (isInHorizontalPanel) {
+          if (isRotated) {
+            height = undefined
+          } else {
+            width = undefined
+          }
+        } else {
+          if (isRotated) {
+            width = undefined
+          } else {
+            height = undefined
+          }
+        }
+      }
+    }
+
+    const renderOptions: RenderOptions = {
+      height,
+      width,
+      rotation,
+    }
+    return renderOptions
+  }
+
   private determineAnimationRenderOptions(): RenderOptions {
     let isRotated = this.settingsObject.rotate
     // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
@@ -572,57 +651,83 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
+  // -------------------------------------------------------------------------------------------------
+  // Callback functions of advanced settings:
+  // Mostly, the changes are applied via a re-init (call of initAnimation).
+  // Many advanced settings depend from each other, e.g. it does not make sense to adjust the margins value when auto margin is enabled.
+  // The updated settings values (e.g. height, width) will be used then (inside "determineRenderOptions" method).
+  // Afterwards, an updateApplet is necessary to clear any possible error states (e.g. recover from invalid values) and update the popup menu.
+
   private updateAnimationAutoMargins(): void {
-    // just need to re-init animation with changed margins
     this.initAnimation()
     this.updateApplet()
   }
 
   private updateAnimationMargins(): void {
-    // apply new margins only if auto margins are disabled
-    if (!this.settingsObject.autoAnimationMargins) {
+    if (this.settingsObject.autoAnimationMargins) {
+      logger.logDebug("Auto margins option is turned on. The custom margin value is ignored.")
+    } else {
       this.initAnimation()
       this.updateApplet()
     }
   }
 
   private updateAutoFitAnimationDimensions(): void {
-    // just need to re-init animation with changed margins
+    if (this.settingsObject.autoAnimationMargins) {
+      logger.logDebug("Auto margins option is turned on and auto-fit is always applied.")
+    } else {
+      this.initAnimation()
+      this.updateApplet()
+    }
+  }
+
+  private updatePreserveAnimationAspectRatio(): void {
+    // TODO: any check required?
     this.initAnimation()
     this.updateApplet()
   }
 
   private updatePreserveAnimationOriginalDimensions(): void {
-    // just need to re-init animation
-    this.initAnimation()
-    this.updateApplet()
-  }
-
-  private updatePreserveAnimationAspectRatio(): void {
-    // just need to re-init animation with updated dimensions
-    this.initAnimation()
-    this.updateApplet()
+    if (this.settingsObject.autoAnimationMargins) {
+      logger.logDebug(
+        "Auto margins option is turned on. Auto-fit is applied and the original images's dimensions cannot be preserved.",
+      )
+    } else if (this.settingsObject.autoFitAnimationDimensions) {
+      logger.logDebug("Auto-fit option is turned on. The original image's dimensions cannot be preserved.")
+    } else {
+      this.initAnimation()
+      this.updateApplet()
+    }
   }
 
   private updateCustomAnimationHeight(): void {
-    // apply new margins only if auto fit is turned off and original image size is ignored
-    if (!this.settingsObject.autoFitAnimationDimensions && !this.settingsObject.preserveAnimationOriginalDimensions) {
+    if (this.settingsObject.autoAnimationMargins) {
+      logger.logDebug("Auto margins option is turned on. Any custom height is ignored")
+    } else if (this.settingsObject.autoFitAnimationDimensions) {
+      logger.logDebug("Auto-fit option is turned on. Any custom height is ignored.")
+    } else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+      logger.logDebug("Preserve images's original dimensions option is turned on. Any custom height is ignored.")
+    } else {
       this.initAnimation()
       this.updateApplet()
     }
   }
 
   private updateCustomAnimationWidth(): void {
-    // apply new margins only if auto fit is turned off and aspect ratio can be ignored
-    if (
-      !this.settingsObject.autoFitAnimationDimensions &&
-      !this.settingsObject.preserveAnimationAspectRatio &&
-      !this.settingsObject.preserveAnimationOriginalDimensions
-    ) {
+    if (this.settingsObject.autoAnimationMargins) {
+      logger.logDebug("Auto margins option is turned on. Any custom width is ignored")
+    } else if (this.settingsObject.autoFitAnimationDimensions) {
+      logger.logDebug("Auto-fit option is turned on. Any custom width is ignored.")
+    } else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+      logger.logDebug("Preserve images's original dimensions option is turned on. Any custom width is ignored.")
+    } else if (this.settingsObject.preserveAnimationAspectRatio) {
+      logger.logDebug("Preserve images's original aspect ratio option is turned on. Any custom width is ignored.")
+    } else {
       this.initAnimation()
       this.updateApplet()
     }
   }
+  // -------------------------------------------------------------------------------------------------
 
   // Applet is in a normal state. Show the fish.
   private updateApplet(): void {
