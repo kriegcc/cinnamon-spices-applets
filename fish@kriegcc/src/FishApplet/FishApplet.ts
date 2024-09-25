@@ -20,6 +20,7 @@ import {
   isHorizontalOriented,
   openWebsite,
   runCommandAsyncIO,
+  getRenderOptions,
 } from "utils/common"
 import { logger } from "utils/logging"
 import { NotificationButton, showNotification } from "utils/notification"
@@ -416,143 +417,78 @@ If you prefer not to install any additional packages, you can change the command
     }
   }
 
-  // TODO:
-  private newDetermineAnimationRenderOptions(): RenderOptions {
-    let height = undefined
-    let width = undefined
-    let rotation: AnimationRotation | undefined = undefined
-
-    let isRotated = this.settingsObject.rotate
-    // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
-    if (isRotated && isHorizontalOriented(this.orientation)) {
-      isRotated = false
-    }
-    if (isRotated) {
-      rotation = 90
-    }
-    // TODO: rotation override
-
-    const isInHorizontalPanel = isHorizontalOriented(this.orientation)
-
-    const margins = this.settingsObject.autoAnimationMargins
-      ? this.getAppletMargin()
-      : this.settingsObject.customAnimationMargins
-
-    const isAutoFit = this.settingsObject.autoFitAnimationDimensions
-
-    const isPreserveDimensions = this.settingsObject.preserveAnimationOriginalDimensions
-    const isPreserveAspectRatio = this.settingsObject.preserveAnimationAspectRatio
-
-    const customWidth = this.settingsObject.customAnimationWidth
-    const customHeight = this.settingsObject.customAnimationHeight
-
-    if (isAutoFit) {
-      if (isInHorizontalPanel) {
-        if (isRotated) {
-          height = undefined
-          width = this.panelHeight - margins
-        } else {
-          height = this.panelHeight - margins
-          width = undefined
-        }
-      } else {
-        if (isRotated) {
-          height = this.panelHeight - margins
-          width = undefined
-        } else {
-          height = undefined
-          width = this.panelHeight - margins
-        }
-      }
-    } else if (isPreserveDimensions) {
-      height = undefined
-      width = undefined
-    } else {
-      height = customHeight
-      width = customWidth
-      if (isPreserveAspectRatio) {
-        if (isInHorizontalPanel) {
-          if (isRotated) {
-            height = undefined
-          } else {
-            width = undefined
-          }
-        } else {
-          if (isRotated) {
-            width = undefined
-          } else {
-            height = undefined
-          }
-        }
-      }
-    }
-
-    const renderOptions: RenderOptions = {
-      height,
-      width,
-      rotation,
-    }
-    return renderOptions
-  }
-
   private determineAnimationRenderOptions(): RenderOptions {
-    let isRotated = this.settingsObject.rotate
-    // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
-    if (isRotated && isHorizontalOriented(this.orientation)) {
-      isRotated = false
-    }
-
-    let height = undefined
-    let width = undefined
-    let rotation: AnimationRotation | undefined = undefined
-
-    const margin = this.getAppletMargin()
-    const isInHorizontalPanel = isHorizontalOriented(this.orientation)
-
-    if (this.settingsObject.autoFitAnimationDimensions) {
-      // default, fit animation frame in panel
-      // TODO: maybe move to separate function
-      if (isInHorizontalPanel) {
-        if (isRotated) {
-          width = this.panelHeight - margin
-          height = undefined
-        } else {
-          width = undefined
-          height = this.panelHeight - margin
-        }
-      } else {
-        // on a vertical panel
-        if (isRotated) {
-          width = undefined
-          height = this.panelHeight - margin
-        } else {
-          width = this.panelHeight - margin
-          height = undefined
-        }
-      }
-    } else if (this.settingsObject.preserveAnimationOriginalDimensions) {
-      // use image's original dimensions
-      width = undefined
-      height = undefined
-    } else {
-      // advanced settings, use user specified dimensions
-      height = this.settingsObject.customAnimationHeight
-      if (!this.settingsObject.preserveAnimationAspectRatio) {
-        width = this.settingsObject.customAnimationWidth
-      }
-    }
-
-    if (isRotated) {
-      rotation = 90
-    }
-
-    const renderOptions: RenderOptions = {
-      height,
-      width,
-      rotation,
-    }
-    return renderOptions
+    return getRenderOptions({
+      isHorizontalPanel: isHorizontalOriented(this.orientation),
+      isAutoMargin: this.settingsObject.autoAnimationMargins,
+      customMargin: this.settingsObject.customAnimationMargins,
+      isAutoFit: this.settingsObject.autoFitAnimationDimensions,
+      isPreserveAspectRation: this.settingsObject.preserveAnimationAspectRatio,
+      isPreserveAnimationOriginalDimensions: this.settingsObject.preserveAnimationOriginalDimensions,
+      customHeight: this.settingsObject.customAnimationHeight,
+      customWidth: this.settingsObject.customAnimationWidth,
+      isRotated: this.settingsObject.rotate,
+    })
   }
+
+  // private determineAnimationRenderOptions(): RenderOptions {
+  //   let isRotated = this.settingsObject.rotate
+  //   // Guard to allow rotation only on vertical panel (as stated in setting's description). Maybe remove in future.
+  //   if (isRotated && isHorizontalOriented(this.orientation)) {
+  //     isRotated = false
+  //   }
+
+  //   let height = undefined
+  //   let width = undefined
+  //   let rotation: AnimationRotation | undefined = undefined
+
+  //   const margin = this.getAppletMargin()
+  //   const isInHorizontalPanel = isHorizontalOriented(this.orientation)
+
+  //   if (this.settingsObject.autoFitAnimationDimensions) {
+  //     // default, fit animation frame in panel
+  //     // TODO: maybe move to separate function
+  //     if (isInHorizontalPanel) {
+  //       if (isRotated) {
+  //         width = this.panelHeight - margin
+  //         height = undefined
+  //       } else {
+  //         width = undefined
+  //         height = this.panelHeight - margin
+  //       }
+  //     } else {
+  //       // on a vertical panel
+  //       if (isRotated) {
+  //         width = undefined
+  //         height = this.panelHeight - margin
+  //       } else {
+  //         width = this.panelHeight - margin
+  //         height = undefined
+  //       }
+  //     }
+  //   } else if (this.settingsObject.preserveAnimationOriginalDimensions) {
+  //     // use image's original dimensions
+  //     width = undefined
+  //     height = undefined
+  //   } else {
+  //     // advanced settings, use user specified dimensions
+  //     height = this.settingsObject.customAnimationHeight
+  //     if (!this.settingsObject.preserveAnimationAspectRatio) {
+  //       width = this.settingsObject.customAnimationWidth
+  //     }
+  //   }
+
+  //   if (isRotated) {
+  //     rotation = 90
+  //   }
+
+  //   const renderOptions: RenderOptions = {
+  //     height,
+  //     width,
+  //     rotation,
+  //   }
+  //   return renderOptions
+  // }
 
   private initAnimation(): void {
     try {

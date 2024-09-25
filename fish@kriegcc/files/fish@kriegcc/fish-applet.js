@@ -298,6 +298,23 @@ function invertColor(color) {
     return invertedColor;
 }
 
+;// CONCATENATED MODULE: ./src/utils/common/renderOptions.ts
+function getRenderOptions(props) {
+    const { isHorizontalPanel, isAutoMargin, customMargin, isAutoFit, isPreserveAnimationOriginalDimensions, isPreserveAspectRation, customHeight, customWidth, } = props;
+    const height = undefined;
+    const width = undefined;
+    const rotation = undefined;
+    const renderOptions = {
+        height,
+        width,
+        rotation,
+    };
+    return renderOptions;
+}
+function sum(a, b) {
+    return a + b;
+}
+
 ;// ./src/utils/common/index.ts
 
 
@@ -1389,132 +1406,18 @@ If you prefer not to install any additional packages, you can change the command
             this.handleError(error, "command");
         }
     }
-    newDetermineAnimationRenderOptions() {
-        let height = undefined;
-        let width = undefined;
-        let rotation = undefined;
-        let isRotated = this.settingsObject.rotate;
-        if (isRotated && isHorizontalOriented(this.orientation)) {
-            isRotated = false;
-        }
-        if (isRotated) {
-            rotation = 90;
-        }
-        const isInHorizontalPanel = isHorizontalOriented(this.orientation);
-        const margins = this.settingsObject.autoAnimationMargins
-            ? this.getAppletMargin()
-            : this.settingsObject.customAnimationMargins;
-        const isAutoFit = this.settingsObject.autoFitAnimationDimensions;
-        const isPreserveDimensions = this.settingsObject.preserveAnimationOriginalDimensions;
-        const isPreserveAspectRatio = this.settingsObject.preserveAnimationAspectRatio;
-        const customWidth = this.settingsObject.customAnimationWidth;
-        const customHeight = this.settingsObject.customAnimationHeight;
-        if (isAutoFit) {
-            if (isInHorizontalPanel) {
-                if (isRotated) {
-                    height = undefined;
-                    width = this.panelHeight - margins;
-                }
-                else {
-                    height = this.panelHeight - margins;
-                    width = undefined;
-                }
-            }
-            else {
-                if (isRotated) {
-                    height = this.panelHeight - margins;
-                    width = undefined;
-                }
-                else {
-                    height = undefined;
-                    width = this.panelHeight - margins;
-                }
-            }
-        }
-        else if (isPreserveDimensions) {
-            height = undefined;
-            width = undefined;
-        }
-        else {
-            height = customHeight;
-            width = customWidth;
-            if (isPreserveAspectRatio) {
-                if (isInHorizontalPanel) {
-                    if (isRotated) {
-                        height = undefined;
-                    }
-                    else {
-                        width = undefined;
-                    }
-                }
-                else {
-                    if (isRotated) {
-                        width = undefined;
-                    }
-                    else {
-                        height = undefined;
-                    }
-                }
-            }
-        }
-        const renderOptions = {
-            height,
-            width,
-            rotation,
-        };
-        return renderOptions;
-    }
     determineAnimationRenderOptions() {
-        let isRotated = this.settingsObject.rotate;
-        if (isRotated && isHorizontalOriented(this.orientation)) {
-            isRotated = false;
-        }
-        let height = undefined;
-        let width = undefined;
-        let rotation = undefined;
-        const margin = this.getAppletMargin();
-        const isInHorizontalPanel = isHorizontalOriented(this.orientation);
-        if (this.settingsObject.autoFitAnimationDimensions) {
-            if (isInHorizontalPanel) {
-                if (isRotated) {
-                    width = this.panelHeight - margin;
-                    height = undefined;
-                }
-                else {
-                    width = undefined;
-                    height = this.panelHeight - margin;
-                }
-            }
-            else {
-                if (isRotated) {
-                    width = undefined;
-                    height = this.panelHeight - margin;
-                }
-                else {
-                    width = this.panelHeight - margin;
-                    height = undefined;
-                }
-            }
-        }
-        else if (this.settingsObject.preserveAnimationOriginalDimensions) {
-            width = undefined;
-            height = undefined;
-        }
-        else {
-            height = this.settingsObject.customAnimationHeight;
-            if (!this.settingsObject.preserveAnimationAspectRatio) {
-                width = this.settingsObject.customAnimationWidth;
-            }
-        }
-        if (isRotated) {
-            rotation = 90;
-        }
-        const renderOptions = {
-            height,
-            width,
-            rotation,
-        };
-        return renderOptions;
+        return getRenderOptions({
+            isHorizontalPanel: isHorizontalOriented(this.orientation),
+            isAutoMargin: this.settingsObject.autoAnimationMargins,
+            customMargin: this.settingsObject.customAnimationMargins,
+            isAutoFit: this.settingsObject.autoFitAnimationDimensions,
+            isPreserveAspectRation: this.settingsObject.preserveAnimationAspectRatio,
+            isPreserveAnimationOriginalDimensions: this.settingsObject.preserveAnimationOriginalDimensions,
+            customHeight: this.settingsObject.customAnimationHeight,
+            customWidth: this.settingsObject.customAnimationWidth,
+            isRotated: this.settingsObject.rotate,
+        });
     }
     initAnimation() {
         try {
