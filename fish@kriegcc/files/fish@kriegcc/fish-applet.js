@@ -299,11 +299,37 @@ function invertColor(color) {
 }
 
 ;// CONCATENATED MODULE: ./src/utils/common/renderOptions.ts
-function getRenderOptions(props) {
-    const { isHorizontalPanel, isAutoMargin, customMargin, isAutoFit, isPreserveAnimationOriginalDimensions, isPreserveAspectRation, customHeight, customWidth, } = props;
-    const height = undefined;
-    const width = undefined;
-    const rotation = undefined;
+
+const DEFAULT_APPLET_CLASS_NAME = "applet-box";
+function determineRenderOptionsFromSettings(props) {
+    const { isInHorizontalPanel, panelHeight, isAutoMargin, customMargin, isAutoFit, isPreserveAnimationOriginalDimensions, isPreserveAspectRation, customHeight, customWidth, isRotated, } = props;
+    let height = undefined;
+    let width = undefined;
+    let rotation = undefined;
+    if (isRotated) {
+        rotation = 90;
+    }
+    const margins = isAutoMargin ? getDefaultAppletMargin() : customMargin;
+    if (isInHorizontalPanel) {
+        if (isRotated) {
+            height = undefined;
+            width = panelHeight - margins;
+        }
+        else {
+            height = panelHeight - margins;
+            width = undefined;
+        }
+    }
+    else {
+        if (isRotated) {
+            height = panelHeight - margins;
+            width = undefined;
+        }
+        else {
+            height = undefined;
+            width = panelHeight - margins;
+        }
+    }
     const renderOptions = {
         height,
         width,
@@ -311,8 +337,12 @@ function getRenderOptions(props) {
     };
     return renderOptions;
 }
-function sum(a, b) {
-    return a + b;
+function getDefaultAppletMargin() {
+    const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME);
+    const margin = themeNode.get_horizontal_padding() +
+        themeNode.get_border_width(imports.gi.St.Side.TOP) +
+        themeNode.get_border_width(imports.gi.St.Side.BOTTOM);
+    return margin;
 }
 
 ;// ./src/utils/common/index.ts
@@ -1157,7 +1187,7 @@ const { GLib: FishApplet_GLib } = imports.gi;
 const Mainloop = imports.mainloop;
 const FOOLS_DAY_CHECK_INTERVAL_IN_MS = 60000;
 const FORTUNE_COMMAND = "fortune";
-const DEFAULT_APPLET_CLASS_NAME = "applet-box";
+const FishApplet_DEFAULT_APPLET_CLASS_NAME = "applet-box";
 class FishApplet extends Applet {
     constructor(metadata, orientation, panelHeight, instanceId) {
         super(orientation, panelHeight, instanceId);
@@ -1407,8 +1437,9 @@ If you prefer not to install any additional packages, you can change the command
         }
     }
     determineAnimationRenderOptions() {
-        return getRenderOptions({
-            isHorizontalPanel: isHorizontalOriented(this.orientation),
+        return determineRenderOptionsFromSettings({
+            isInHorizontalPanel: isHorizontalOriented(this.orientation),
+            panelHeight: this.panelHeight,
             isAutoMargin: this.settingsObject.autoAnimationMargins,
             customMargin: this.settingsObject.customAnimationMargins,
             isAutoFit: this.settingsObject.autoFitAnimationDimensions,
@@ -1652,11 +1683,11 @@ If you prefer not to install any additional packages, you can change the command
         this.setThemeStyleClasses();
     }
     isDarkMode() {
-        return getThemeAppearance(DEFAULT_APPLET_CLASS_NAME) === "Dark" ? true : false;
+        return getThemeAppearance(FishApplet_DEFAULT_APPLET_CLASS_NAME) === "Dark" ? true : false;
     }
     getAppletMargin() {
         if (this.settingsObject.autoAnimationMargins) {
-            const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME);
+            const themeNode = getThemeNodeOfClass(FishApplet_DEFAULT_APPLET_CLASS_NAME);
             const margin = themeNode.get_horizontal_padding() +
                 themeNode.get_border_width(imports.gi.St.Side.TOP) +
                 themeNode.get_border_width(imports.gi.St.Side.BOTTOM);

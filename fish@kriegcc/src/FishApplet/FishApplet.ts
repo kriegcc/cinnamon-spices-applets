@@ -20,7 +20,7 @@ import {
   isHorizontalOriented,
   openWebsite,
   runCommandAsyncIO,
-  getRenderOptions,
+  determineRenderOptionsFromSettings,
 } from "utils/common"
 import { logger } from "utils/logging"
 import { NotificationButton, showNotification } from "utils/notification"
@@ -418,8 +418,9 @@ If you prefer not to install any additional packages, you can change the command
   }
 
   private determineAnimationRenderOptions(): RenderOptions {
-    return getRenderOptions({
-      isHorizontalPanel: isHorizontalOriented(this.orientation),
+    return determineRenderOptionsFromSettings({
+      isInHorizontalPanel: isHorizontalOriented(this.orientation),
+      panelHeight: this.panelHeight,
       isAutoMargin: this.settingsObject.autoAnimationMargins,
       customMargin: this.settingsObject.customAnimationMargins,
       isAutoFit: this.settingsObject.autoFitAnimationDimensions,
