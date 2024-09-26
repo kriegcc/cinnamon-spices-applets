@@ -1,7 +1,11 @@
 import { AnimationRotation, RenderOptions } from "AnimatedFish"
+import { getThemeNodeOfClass } from "./theme"
 
-export type GetRenderOptionProps = {
-  isHorizontalPanel: boolean
+const DEFAULT_APPLET_CLASS_NAME = "applet-box"
+
+export type RenderOptionSettings = {
+  isInHorizontalPanel: boolean
+  panelHeight: number
 
   isAutoMargin: boolean
   customMargin: number
@@ -16,9 +20,10 @@ export type GetRenderOptionProps = {
   // rotation: AnimationRotation
 }
 
-export function getRenderOptions(props: GetRenderOptionProps): RenderOptions {
+export function determineRenderOptionsFromSettings(props: RenderOptionSettings): RenderOptions {
   const {
-    isHorizontalPanel,
+    isInHorizontalPanel,
+    panelHeight,
     isAutoMargin,
     customMargin,
     isAutoFit,
@@ -26,11 +31,36 @@ export function getRenderOptions(props: GetRenderOptionProps): RenderOptions {
     isPreserveAspectRation,
     customHeight,
     customWidth,
+    isRotated,
   } = props
 
-  const height = undefined
-  const width = undefined
-  const rotation: AnimationRotation | undefined = undefined
+  let height = undefined
+  let width = undefined
+  let rotation: AnimationRotation | undefined = undefined
+
+  if (isRotated) {
+    rotation = 90
+  }
+
+  const margins = isAutoMargin ? getDefaultAppletMargin() : customMargin
+
+  if (isInHorizontalPanel) {
+    if (isRotated) {
+      height = undefined
+      width = panelHeight - margins
+    } else {
+      height = panelHeight - margins
+      width = undefined
+    }
+  } else {
+    if (isRotated) {
+      height = panelHeight - margins
+      width = undefined
+    } else {
+      height = undefined
+      width = panelHeight - margins
+    }
+  }
 
   const renderOptions: RenderOptions = {
     height,
@@ -40,8 +70,14 @@ export function getRenderOptions(props: GetRenderOptionProps): RenderOptions {
   return renderOptions
 }
 
-export function sum(a: number, b: number): number {
-  return a + b
+export function getDefaultAppletMargin(): number {
+  // reads and calculate margins from active CSS stylesheet, element "applet-box"
+  const themeNode = getThemeNodeOfClass(DEFAULT_APPLET_CLASS_NAME)
+  const margin =
+    themeNode.get_horizontal_padding() +
+    themeNode.get_border_width(imports.gi.St.Side.TOP) +
+    themeNode.get_border_width(imports.gi.St.Side.BOTTOM)
+  return margin
 }
 
 // private newDetermineAnimationRenderOptions(): RenderOptions {
