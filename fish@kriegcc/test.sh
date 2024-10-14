@@ -12,9 +12,13 @@ echo "Build completed successfully."
 # run "test-spice" script which copies this applet's files to the applet folder, see ../README.md
 # note: this applet's folder name gets prefixed with `devtest-`
 echo "Copying build to local applet folder..."
-cd ..
-./test-spice $UUID
-cd "$CURRENT_DIR"
+# cd ..
+# ./test-spice $UUID
+# cd "$CURRENT_DIR"
+rm -rf ~/.local/share/cinnamon/applets/$UUID/
+mkdir ~/.local/share/cinnamon/applets/$UUID/
+# --------------------------------------------------
+cp -rf files/$UUID/* ~/.local/share/cinnamon/applets/$UUID/
 echo "Copy completed successfully."
 
 export DISPLAY=:0; cinnamon --replace &

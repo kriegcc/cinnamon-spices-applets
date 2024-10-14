@@ -1,10 +1,10 @@
 // Mock getThemeNodeOfClass before importing renderOptions
-jest.mock("./theme", () => ({
-  getThemeNodeOfClass: jest.fn(() => ({
-    get_horizontal_padding: () => 0,
-    get_border_width: () => 0,
-  })),
-}))
+// jest.mock("./theme", () => ({
+//   getThemeNodeOfClass: jest.fn(() => ({
+//     get_horizontal_padding: () => 0,
+//     get_border_width: () => 0,
+//   })),
+// }))
 
 import { RenderOptions } from "AnimatedFish"
 import { RenderOptionSettings, determineRenderOptionsFromSettings } from "./renderOptions"
