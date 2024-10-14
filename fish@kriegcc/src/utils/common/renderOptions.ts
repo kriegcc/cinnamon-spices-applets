@@ -42,6 +42,7 @@ export function determineRenderOptionsFromSettings(props: RenderOptionSettings):
     rotation = 90
   }
 
+  global.log("--> getDefaultAppletMargin:", getDefaultAppletMargin())
   const margins = isAutoMargin ? getDefaultAppletMargin() : customMargin
 
   if (isInHorizontalPanel) {
