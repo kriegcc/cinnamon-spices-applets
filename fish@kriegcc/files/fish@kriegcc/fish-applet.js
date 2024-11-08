@@ -309,6 +309,7 @@ function determineRenderOptionsFromSettings(props) {
     if (isRotated) {
         rotation = 90;
     }
+    global.log("--> getDefaultAppletMargin:", getDefaultAppletMargin());
     const margins = isAutoMargin ? getDefaultAppletMargin() : customMargin;
     if (isInHorizontalPanel) {
         if (isRotated) {
