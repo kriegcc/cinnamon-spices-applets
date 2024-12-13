@@ -64,13 +64,13 @@ __webpack_require__.d(__webpack_exports__, {
   main: () => (/* binding */ main)
 });
 
-;// CONCATENATED MODULE: ./src/consts/common.ts
+;// ./src/consts/common.ts
 const UUID = "fish@kriegcc";
 const KNOWN_USEFUL_PROGRAMS = ["ps", "who", "uptime", "tail"];
 const FISH_APPLET_CINNAMON_SPICES_WEBSITE = "https://cinnamon-spices.linuxmint.com/applets/view/401";
 const REPORT_BUGS_INSTRUCTIONS_WEBSITE = "https://github.com/linuxmint/cinnamon-spices-applets/blob/master/.github/CONTRIBUTING.md";
 
-;// CONCATENATED MODULE: ./src/utils/logging/Logger.ts
+;// ./src/utils/logging/Logger.ts
 
 const { isError } = imports.ui.main;
 const DEFAULT_LOG_LEVEL = "Info";
@@ -127,10 +127,10 @@ class Logger {
 }
 const logger = new Logger();
 
-;// CONCATENATED MODULE: ./src/utils/logging/index.ts
+;// ./src/utils/logging/index.ts
 
 
-;// CONCATENATED MODULE: ./src/utils/common/common.ts
+;// ./src/utils/common/common.ts
 
 const { St } = imports.gi;
 const { GLib } = imports.gi;
@@ -165,7 +165,7 @@ function isAnimationSpeedValid(speed) {
     return true;
 }
 
-;// CONCATENATED MODULE: ./src/utils/common/command.ts
+;// ./src/utils/common/command.ts
 const { spawnCommandLineAsyncIO, spawnCommandLine } = imports.misc.util;
 function runCommandAsyncIO(command, callback, errorCallback) {
     spawnCommandLineAsyncIO(command, (stdout, stderr, exitCode) => {
@@ -183,7 +183,7 @@ function openWebsite(url) {
     runCommand("xdg-open " + url);
 }
 
-;// CONCATENATED MODULE: ./src/utils/common/foolsDay.ts
+;// ./src/utils/common/foolsDay.ts
 
 const { spawnCommandLineAsyncIO: foolsDay_spawnCommandLineAsyncIO } = imports.misc.util;
 async function isFoolsDay() {
@@ -259,7 +259,7 @@ function readFile(filePath) {
     });
 }
 
-;// CONCATENATED MODULE: ./src/utils/common/theme.ts
+;// ./src/utils/common/theme.ts
 function getThemeAppearance(className) {
     const theme = getThemeNodeOfClass(className);
     const color = theme.get_foreground_color();
@@ -298,13 +298,13 @@ function invertColor(color) {
     return invertedColor;
 }
 
-;// CONCATENATED MODULE: ./src/utils/common/index.ts
+;// ./src/utils/common/index.ts
 
 
 
 
 
-;// CONCATENATED MODULE: ./src/AnimatedFish/AnimatedFish.ts
+;// ./src/AnimatedFish/AnimatedFish.ts
 
 
 
@@ -446,7 +446,7 @@ const AnimatedFish = GObject.registerClass(class AnimatedFish extends AnimatedFi
     }
 });
 
-;// CONCATENATED MODULE: ./src/utils/pixbuf/image.ts
+;// ./src/utils/pixbuf/image.ts
 const { GdkPixbuf } = imports.gi;
 function getFrameSizeOfSlicedImage(file, frames) {
     if (!Number.isInteger(frames) || frames < 0) {
@@ -494,10 +494,10 @@ function getPixbufFromFileAtScale(file, width, height, preserveAspectRatio) {
     return pixbuf;
 }
 
-;// CONCATENATED MODULE: ./src/utils/pixbuf/index.ts
+;// ./src/utils/pixbuf/index.ts
 
 
-;// CONCATENATED MODULE: ./src/AnimatedFish/Animation/cairo-surface/Animation.ts
+;// ./src/AnimatedFish/Animation/cairo-surface/Animation.ts
 
 
 const { St: Animation_St, GLib: Animation_GLib, GObject: Animation_GObject, Gdk } = imports.gi;
@@ -695,11 +695,11 @@ function mapAnimationRotationToPixbufRotation(rotation) {
     }
 }
 
-;// CONCATENATED MODULE: ./src/AnimatedFish/index.ts
+;// ./src/AnimatedFish/index.ts
 
 
 
-;// CONCATENATED MODULE: ./src/PopupMenu/BasePopupMenu.ts
+;// ./src/PopupMenu/BasePopupMenu.ts
 const { AppletPopupMenu } = imports.ui.applet;
 class BasePopupMenu extends AppletPopupMenu {
     constructor(launcher, orientation) {
@@ -714,7 +714,7 @@ class BasePopupMenu extends AppletPopupMenu {
     }
 }
 
-;// CONCATENATED MODULE: ./src/utils/translation/translation.ts
+;// ./src/utils/translation/translation.ts
 
 const Gettext = imports.gettext;
 function _(text) {
@@ -725,10 +725,10 @@ function _(text) {
     return Gettext.gettext(text);
 }
 
-;// CONCATENATED MODULE: ./src/utils/translation/index.ts
+;// ./src/utils/translation/index.ts
 
 
-;// CONCATENATED MODULE: ./src/utils/icons/icons.ts
+;// ./src/utils/icons/icons.ts
 const { St: icons_St } = imports.gi;
 const ErrorIcon = (iconsSize = 24) => new icons_St.Icon({
     icon_name: "error",
@@ -741,10 +741,10 @@ const InfoIcon = (iconsSize = 24) => new icons_St.Icon({
     icon_size: iconsSize,
 });
 
-;// CONCATENATED MODULE: ./src/utils/icons/index.ts
+;// ./src/utils/icons/index.ts
 
 
-;// CONCATENATED MODULE: ./src/utils/notification/notification.ts
+;// ./src/utils/notification/notification.ts
 
 const { MessageTray, SystemNotificationSource, Notification, Urgency } = imports.ui.messageTray;
 const Main = imports.ui.main;
@@ -774,10 +774,10 @@ function showNotification(props) {
     }
 }
 
-;// CONCATENATED MODULE: ./src/utils/notification/index.ts
+;// ./src/utils/notification/index.ts
 
 
-;// CONCATENATED MODULE: ./src/PopupMenu/ErrorPopupMenu.ts
+;// ./src/PopupMenu/ErrorPopupMenu.ts
 
 
 
@@ -892,7 +892,7 @@ class ErrorPopupMenu extends BasePopupMenu {
     }
 }
 
-;// CONCATENATED MODULE: ./src/PopupMenu/FishMessagePopupMenu.ts
+;// ./src/PopupMenu/FishMessagePopupMenu.ts
 
 
 
@@ -1004,7 +1004,7 @@ class FishMessagePopupMenu extends BasePopupMenu {
     }
 }
 
-;// CONCATENATED MODULE: ./src/PopupMenu/FoolsDayPopupMenu.ts
+;// ./src/PopupMenu/FoolsDayPopupMenu.ts
 
 
 
@@ -1042,7 +1042,7 @@ class FoolsDayPopupMenu extends BasePopupMenu {
     }
 }
 
-;// CONCATENATED MODULE: ./src/PopupMenu/PopupMenuFactory.ts
+;// ./src/PopupMenu/PopupMenuFactory.ts
 
 
 
@@ -1070,14 +1070,14 @@ class PopupMenuFactory {
     }
 }
 
-;// CONCATENATED MODULE: ./src/PopupMenu/index.ts
+;// ./src/PopupMenu/index.ts
 
 
 
 
 
 
-;// CONCATENATED MODULE: ./src/FishApplet/ErrorManager/FishAppletErrorManager.ts
+;// ./src/FishApplet/ErrorManager/FishAppletErrorManager.ts
 class FishAppletErrorManager {
     constructor() {
         this.errors = {};
@@ -1116,7 +1116,7 @@ class FishAppletErrorManager {
     }
 }
 
-;// CONCATENATED MODULE: ./src/FishApplet/FishApplet.ts
+;// ./src/FishApplet/FishApplet.ts
 
 
 
@@ -1589,10 +1589,10 @@ If you prefer not to install any additional packages, you can change the command
     }
 }
 
-;// CONCATENATED MODULE: ./src/FishApplet/index.ts
+;// ./src/FishApplet/index.ts
 
 
-;// CONCATENATED MODULE: ./src/applet.ts
+;// ./src/applet.ts
 
 
 
