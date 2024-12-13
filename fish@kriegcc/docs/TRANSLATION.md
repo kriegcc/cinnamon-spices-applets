@@ -20,8 +20,13 @@ However, there are some deviations (like error handling) in this applet from the
 - Catalan (ca): Odyssey
 - German (de): kriegcc (copied from mate-panel and adjusted)
 - Spanish (es): haggen88
+- French (fr): Claudiux
+- Hungarian (hu): bossbob88
+- Dutch (nl): qadzek
 
 [Generated Translation Status Table](https://github.com/linuxmint/cinnamon-spices-applets/blob/translation-status-tables/.translation-tables/tables/fish%40kriegcc.md)
+
+Thank you to everyone who has contributed translations to make this applet available in multiple languages.
 
 ## Translating
 
