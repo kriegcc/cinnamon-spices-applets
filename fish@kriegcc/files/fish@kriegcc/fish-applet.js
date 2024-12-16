@@ -298,7 +298,7 @@ function invertColor(color) {
     return invertedColor;
 }
 
-;// CONCATENATED MODULE: ./src/utils/common/renderOptions.ts
+;// ./src/utils/common/renderOptions.ts
 
 const DEFAULT_APPLET_CLASS_NAME = "applet-box";
 function determineRenderOptionsFromSettings(props) {
@@ -347,6 +347,7 @@ function getDefaultAppletMargin() {
 }
 
 ;// ./src/utils/common/index.ts
+
 
 
 
